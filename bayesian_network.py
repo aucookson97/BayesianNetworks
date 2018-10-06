@@ -45,7 +45,7 @@ def findNodeByName(name, node_list):
     return None
 
 def drawNetwork(network):
-    pos = nx.spring_layout(network)
+    pos = nx.spectral_layout(network)
     network_labels = {}
     for node in network.nodes():
         network_labels[node] = node.name
