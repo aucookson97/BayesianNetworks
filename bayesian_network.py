@@ -12,7 +12,7 @@ class Node():
         self.query = None
 
     def __str__(self):
-        return("Name: {}\nParents: {}\nProb. Table: {}\nEvidence: {}\nQuery: {}\nUnknown: {}".format(self.name, self.parents, self.prob, self.evidence, self.query, self.unknown))
+        return("Name: {}\nParents: {}\nProb. Table: {}\nEvidence: {}\nQuery: {}".format(self.name, self.parents, self.prob, self.evidence, self.query))
 
 def createNetwork(input_file, assignment_file):
     network = nx.DiGraph()
@@ -52,7 +52,6 @@ def assignValue(input_file, node_list):
     with open(input_file, 'r') as file:
         l = file.read()
         queries = l.strip().split(',')
-        print(queries)
     for queryElem in range(len(queries)):
         if(queries[queryElem] == "?" or queries[queryElem] == "q"):
             node_list[queryElem].query = True
@@ -84,6 +83,7 @@ def drawNetwork(network):
 def printNodes(node_list):
     for node in node_list:
         print(node)
+        print()
 
 
 if __name__=="__main__":
