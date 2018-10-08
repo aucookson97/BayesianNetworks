@@ -177,10 +177,28 @@ def printNetwork(network):
 if __name__=="__main__":
         
 #    print (sys.argv)
-    input_file = "network_option_a.txt"
-    assignment_file = "query1.txt"
-    sample_size = 1000
-    network = createNetwork(input_file, assignment_file)
+
+    # input_file = "network_option_a.txt"
+    # assignment_file = "query1.txt"
+    # sample_size = 1000
+
+    network_file = ""
+    query_file = ""
+    sample_size_val = ""
+    sample_size = 0
+
+    try:
+        network_file, query_file, sample_size_val = sys.argv[1:4]
+    except ValueError:
+        print('Please enter three arguments in the format \"network_file.txt query_file.txt sample_size\".')
+
+    sample_size = int(sample_size_val)
+
+    if not '.txt' in network_file or not '.txt' in query_file:
+        print('Error! network_file and query file must be .txt!')
+        sys.exit(1)
+
+    network = createNetwork(network_file, query_file)
     prob = rejectionSampling(network, sample_size)
     print ('Rejection Sampling: \n\tP(X|e) = {}'.format(prob))
     prob = likelihoodWeighting(network, sample_size)
