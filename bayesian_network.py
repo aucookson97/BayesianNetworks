@@ -14,7 +14,7 @@ class Node():
         self.evidence = None
         self.query = None
 
-    def setValue(self, network):
+    def setValue(self, network, useEvidence=False):
         if self.value != None:
             return self.value
         val = random.random()
@@ -33,6 +33,9 @@ class Node():
                 self.value = False
             else:
                 self.value = True
+        if useEvidence:
+            if self.evidence != None:
+                self.value = self.evidence    
         return self.value
             
         
@@ -108,7 +111,37 @@ def rejectionSampling(network, num_samples):
     return probability
 
 def likelihoodWeighting(network, num_samples):
-    return 1
+    weight_sum = 0
+    query_sum = 0
+    for i in range(num_samples):
+        for node in network.nodes():
+            node.setValue(network, True)
+        weight = getSampleWeight(network)
+        weight_sum += weight
+        for node in network.nodes():
+            if node.query:
+                if node.value:
+                    query_sum += weight
+                    break
+            elif node.query == False:
+                break
+        reset(network)
+    return query_sum / weight_sum
+        
+
+def getSampleWeight(network):
+    weight = 1
+    for n in network.nodes():
+        if n.evidence != None:
+            if n.evidence == True:
+                index = 1
+            else:
+                index = 0
+            for i in range(0, len(n.parents)):
+                if findNodeByName(n.parents[i], network).value:
+                    index += math.pow(2, i+1)
+            weight *= n.prob[int(index)]
+    return weight
 
 def validEvidence(network):
     for node in network.nodes():
@@ -146,8 +179,10 @@ if __name__=="__main__":
 #    print (sys.argv)
     input_file = "network_option_a.txt"
     assignment_file = "query1.txt"
+    sample_size = 1000
     network = createNetwork(input_file, assignment_file)
-    #prob = rejectionSampling(network, 100000)
-    prob = likelihoodWeighting(network, 1000)
-    print ('P(X|e) = {}'.format(prob))
+    prob = rejectionSampling(network, sample_size)
+    print ('Rejection Sampling: \n\tP(X|e) = {}'.format(prob))
+    prob = likelihoodWeighting(network, sample_size)
+    print ('Likelihood Weighting: \n\tP(X|e) = {}'.format(prob))
     drawNetwork(network)
